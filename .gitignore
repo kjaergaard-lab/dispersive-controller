@@ -1,0 +1,11 @@
+*.asv
+*.mat
+*.swp
+fpga/*
+!fpga/*.ucf
+!fpga/*.tcl
+#!fpga/*.ucf
+!fpga/ipcore_dir/
+fpga/ipcore_dir/*
+!fpga/ipcore_dir/*.xco
+
