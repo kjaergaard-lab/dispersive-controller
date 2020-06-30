@@ -1,25 +1,27 @@
 library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL;
---
--- Takes bytes of data from UART_Recevier and assembles them into either 32 bit command or numerical data
---
+use ieee.std_logic_1164.all; 
+use ieee.numeric_std.ALL;
+use ieee.std_logic_unsigned.all; 
+
+--Takes bytes of data from UART_Recevier and assembles them into either 32 bit command words or integers
 entity ReadData is
-	generic(BAUD_PERIOD	:	integer);												--Baud period in clock cycles
+	generic(	baudPeriod	:	integer;
+				numMemBytes	:	integer);
 				
-	port(	clk 		:	in std_logic;												--Clock
-			dataIn		:	in	std_logic_vector(7 downto 0);						--1 byte of data from UART_receiver
-			byteReady	:	in	std_logic;												--Signal to tell if byte is valid
-			cmdDataOut	:	out std_logic_vector(31 downto 0);					--32 bit command word
-			numDataOut	:	out std_logic_vector(31 downto 0);					--Numerical parameter
-			dataFlag	:	in	std_logic;												--Indicates type of data cmd/num
-			dataReady	:	out std_logic);											--Indicates data is ready
+	port(	clk 		:	in std_logic;									--Clock
+			dataIn		:	in	std_logic_vector(7 downto 0);				--1 byte of data from UART_receiver
+			byteReady	:	in	std_logic;									--Signal to tell if byte is valid
+			cmdDataOut	:	out	std_logic_vector(31 downto 0);				--32 bit command word
+			numDataOut	:	out std_logic_vector(31 downto 0);				--Numerical parameter
+			memDataOut	:	out std_logic_vector(8*numMemBytes-1 downto 0);	--Data for memory
+			dataFlag	:	in	std_logic_vector(1 downto 0);				--Indicates type of data (mem, num)
+			dataReady	:	out std_logic);									--Indicates data is ready
 end ReadData;
 
 architecture Behavioral of ReadData is
 
 constant numBytes	:	integer	:=	4;
-constant timeOut	:	integer	:=	100000*BAUD_PERIOD;	--100,000 baudPeriods until data assembly times out
+constant timeOut	:	integer	:=	100000*baudPeriod;	--100,000 baudPeriods until data assembly times out
 
 signal state	:	integer range 0 to 3	:=	0;
 signal byteCount	:	integer range 0 to 8	:=	0;	--Maximum number of bytes is 8 (64 bits)
@@ -33,9 +35,7 @@ AssembleData: process(clk) is
 begin
 	if rising_edge(clk) then
 		AssembleFSM: case state is
-			--
-			-- Idle state. Waits for a byte to be ready.
-			--
+			--Idle state
 			when 0 =>
 				dataReady <= '0';
 				if byteReady = '1' then
@@ -51,27 +51,30 @@ begin
 					end if;
 				end if;
 				
-			--
-			-- Add new byte to data
-			--
+			--Add new byte to data
 			when 1 =>
 				data((byteCount+1)*8-1 downto byteCount*8) <= dataIn;
 				byteCount <= byteCount + 1;
 				state <= 2;
 				
-			--
-			-- Check if total instruction is assembled.  Push data to
-			-- either cmdDataOut or numDataOut depending on dataFlag
-			--
+			--Check if total instruction is assembled
 			when 2 =>
 				state <= 0;
-				if byteCount = numBytes then
-					dataReady <= '1';
-					byteCount <= 0;
-					if dataFlag = '0' then
-						cmdDataOut <= data(8*numBytes-1 downto 0);
-					else
-						numDataOut <= data(8*numBytes-1 downto 0);
+				if dataFlag(1) = '0' then
+					if byteCount = numBytes then
+						dataReady <= '1';
+						byteCount <= 0;
+						if dataFlag(0) = '0' then
+							cmdDataOut <= data(8*numBytes-1 downto 0);
+						else
+							numDataOut <= data(8*numBytes-1 downto 0);
+						end if;
+					end if;
+				else
+					if byteCount = numMemBytes then
+						dataReady <= '1';
+						byteCount <= 0;
+						memDataOut <= data(8*numMemBytes-1 downto 0);
 					end if;
 				end if;
 			when others => null;

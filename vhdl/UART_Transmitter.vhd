@@ -1,21 +1,20 @@
 library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL;
+use ieee.std_logic_1164.all; 
+use ieee.numeric_std.ALL;
+use ieee.std_logic_unsigned.all; 
 
---
--- Sends a 32-bit word to PC using UART protocol using a baud rate set by generic constant
--- Uses an 8-bit, 1 stop bit, 1 start bit, no parity scheme, except for the very last stop bit
--- where two stop bits are used, as I have had some trouble with the PC side receiving data
---
+--Sends a 32-bit word to PC using UART protocol using a baud rate set by generic constant
+--Uses an 8-bit, 1 stop bit, 1 start bit, no parity scheme, except for the very last stop bit
+--where two stop bits are used, as I have had some trouble with the PC side receiving data
 entity UART_Transmitter is
-	generic(BAUD_PERIOD	:	integer);									--Baud period
+	generic(	baudPeriod	:	integer);
 	
-	port(	clk 			: 	in 	std_logic;								--Clock signal
-			dataIn		:	in		std_logic_vector(31 downto 0);	--32-bit word to be sent
-			trigIn		:	in		std_logic;								--Trigger to send data
-			TxD			:	out	std_logic;								--Serial transmit port
-			baudTickOut	:	out	std_logic;								--Output for baud ticks for testing
-			busy			:	out	std_logic);								--Busy signal is high when transmitting
+	port(	clk 			: 	in std_logic;	--
+			dataIn		:	in	std_logic_vector(31 downto 0);	--32-bit word to be sent
+			trigIn		:	in	std_logic;	--Trigger to send data
+			TxD			:	out	std_logic;	--Serial transmit port
+			baudTickOut	:	out	std_logic;	--Output for baud ticks for testing
+			busy			:	out	std_logic);	--Busy signal is high when transmitting
 end UART_Transmitter;
 
 architecture Behavioral of UART_Transmitter is
@@ -25,18 +24,16 @@ constant NUM_BITS	:	integer	:=	41;
 signal state		:	integer range 0 to 3	:=	0;
 signal bitCount	:	integer range 0 to NUM_BITS-1	:=	0;
 signal data			:	std_logic_vector(NUM_BITS-1 downto 0) := (others => '0');
-signal count		:	integer range 0 to BAUD_PERIOD	:=	0;
+signal count		:	integer range 0 to baudPeriod	:=	0;
 
 begin
+
 
 SendData: process(clk) is
 begin
 	if rising_edge(clk) then
 		SendFSM: case state is
-			--
-			-- Idle state.  When a trigger is received, the busy signal is raised
-			-- and the data to be sent is latched into an internal signal
-			--
+			--Idle state
 			when 0 =>
 				if trigIn = '1' then
 					bitCount <= 0;
@@ -49,11 +46,9 @@ begin
 					busy <= '0';
 				end if;
 				
-			--
-			-- Baud counter
-			--
+			--Baud counter
 			when 1 =>
-				if count < BAUD_PERIOD then
+				if count < baudPeriod then
 					count <= count + 1;
 					baudTickOut <= '0';
 				else
@@ -62,9 +57,7 @@ begin
 					count <= 0;
 				end if;
 				
-			--
-			-- Send data
-			--
+			--Send data
 			when 2 =>
 				TxD <= data(bitCount);
 				if bitCount >= (NUM_BITS - 1) then
