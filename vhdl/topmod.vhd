@@ -161,6 +161,7 @@ dispShutterOut <= dispShutterIn;
 ------------  Serial command parsing  -----------------
 -------------------------------------------------------
 index <= to_integer(unsigned(ser_bus.m.cmd(7 downto 0)));
+ledvec <= ser_bus.m.cmd(7 downto 0);
 ReadProcess: process(clk) is
 begin
 	if rising_edge(clk) then
