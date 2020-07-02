@@ -6,25 +6,18 @@ classdef DispersivePulses < handle
         delay
         numPulses
     end
-    
-    properties(SetAccess = immutable)
-        addr
-        index
-    end
-    
-    properties(Constant)
-        
-    end
+
     
     methods
-        function self = DispersivePulses(addr,index)
-            self.addr = addr;
-            self.index = index;
-            
-            self.period = 50;
-            self.width = 25;
-            self.delay = 0;
-            self.numPulses = 0;
+        function self = DispersivePulses(varargin)
+            if nargin == 0
+                self.period = 50;
+                self.width = 25;
+                self.delay = 0;
+                self.numPulses = 50;
+            else
+                self.set(varargin{:});
+            end
         end
         
         function self = set(self,p,w,d,N)
@@ -47,10 +40,6 @@ classdef DispersivePulses < handle
             elseif self.width>=self.period
                 error('Width of pulse must be shorter than pulse period!');
             end
-        end
-        
-        function self = upload(self,client)
-            data = 
         end
         
         

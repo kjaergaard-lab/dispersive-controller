@@ -15,9 +15,9 @@ def acceptWrapper(sock):
     message = libserver.Message(sel,conn,addr)
     sel.register(conn,selectors.EVENT_READ,data=message)
 
-# host = "127.0.0.1"
-r = subprocess.run(['hostname','-I'],stdout=subprocess.PIPE)
-host = r.stdout.decode('ascii').rstrip()
+host = "127.0.0.1"
+# r = subprocess.run(['hostname','-I'],stdout=subprocess.PIPE)
+# host = r.stdout.decode('ascii').rstrip()
 port = 6666
 lsock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 lsock.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR, 1)

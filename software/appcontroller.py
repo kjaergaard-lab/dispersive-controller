@@ -4,14 +4,18 @@ import time
 
 
 def write(data,header):
-    if header["method"] == "serial":
-        r = write_serial(data,header["aux"],header["read"])
+    if "method" in header and header["method"] == "serial":
+        r = write_serial(data,header)
     else:
-        r = None
+        r = {
+        "msg"   :   "No data written as method not found",
+        "err"   :   True,
+        "data"  :   ""
+    }
     return r
 
 
-def write_serial(data,header,readData):
+def write_serial(data,header):
     #Process header
     #Open serial port
     portName = header["port"]
@@ -38,7 +42,7 @@ def write_serial(data,header,readData):
     #Write data
     x = ser.write(data)
 
-    if readData:
+    if header["mode"] == "read":
         #Read data
         time.sleep(waitTime)
         try:
@@ -51,11 +55,11 @@ def write_serial(data,header,readData):
             else:
                 tmp2 = BitArray(tmp)
                 tmp2.byteswap()
-                response["data"] = tmp2.hex
+                response["data"] = [tmp2.hex]
         except Exception:
             print(
                 "main: error: exception for\n",
-                f"{traceback.format_exc()}",
+                "{}".format(traceback.format_exc()),
                 )
             response["msg"] = "Unable to read from %s." % portName
             # response["msg"] = "Exception when reading:\n" + f"{traceback.format_exc()}"

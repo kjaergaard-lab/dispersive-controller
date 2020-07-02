@@ -9,3 +9,4 @@ fpga/*
 fpga/ipcore_dir/*
 !fpga/ipcore_dir/*.xco
 
+__pycache__/

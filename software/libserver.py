@@ -119,7 +119,7 @@ class Message:
             # print("Header is",self._recv_buffer[:hdr_len])
             # hdr = int.from_bytes(struct.unpack("<c",self._recv_buffer[:1])[0],'little')
             self.header = json.loads(self._recv_buffer[:self.header_len].decode('ascii'))
-            self.msg_len = 4*self.header["length"]
+            self.msg_len = self.header["length"]
 
             print("Header:")
             print(self.header)
@@ -130,16 +130,16 @@ class Message:
         if len(self._recv_buffer) >= self.msg_len:
             self.msg = self._recv_buffer[:self.msg_len]
             pmsg = []
-            for d in struct.iter_unpack("<I",self._recv_buffer[:self.msg_len]):
+            for d in struct.iter_unpack("<B",self._recv_buffer[:self.msg_len]):
                 pmsg.append(d[0])
             if ("print" in self.header) and (self.header["print"]):
                 print("Message:",self.msg)
-                print("\n".join("%08x"%item for item in pmsg))
+                print("\n".join("%02x"%item for item in pmsg))
             
             self._recv_buffer = self._recv_buffer[self.msg_len:]
             
             #Write data using io-controller
-            self.fpga_response = appcontroller.write(pmsg,self.header)
+            self.fpga_response = appcontroller.write(self.msg,self.header)
             print("Message written to server")
             #At end of reading of data, set class to write mode
             self._set_selector_events_mask("w")

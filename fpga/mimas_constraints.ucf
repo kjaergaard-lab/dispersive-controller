@@ -24,13 +24,13 @@ NET "ledvec[7]" 			  LOC = P111	| IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAS
 NET "TxD"              LOC = P32      | IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;    # P1-6
 NET "RxD"              LOC = P34      | IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST | PULLUP;    # P1-4
 
-NET "dispShutterOut"   LOC = P105      | IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;    # P2-38
-NET "dispShutterIn"    LOC = P104      | IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;    # P2-37
-NET "dispRbOut"        LOC = P102      | IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;    # P2-36
-NET "dispKOut"         LOC = P101      | IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;    # P2-35
-NET "dispTrigIn"       LOC = P100      | IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;    # P2-34
-NET "digitizerOut"     LOC = P99      	| IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;    # P2-33
-NET "dispAOMIn"        LOC = P98      	| IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;    # P2-32
+NET "shutter_o"         LOC = P105      | IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;    # P2-38
+NET "shutter_i"         LOC = P104      | IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;    # P2-37
+NET "pulseRb_o"         LOC = P102      | IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;    # P2-36
+NET "pulseK_o"          LOC = P101      | IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;    # P2-35
+NET "trig_i"            LOC = P100      | IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;    # P2-34
+NET "digitizer_o"       LOC = P99      	| IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;    # P2-33
+NET "disp_i"            LOC = P98      	| IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;    # P2-32
 #NET "dispAOMKIn"       LOC = P140      | IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST ;    # P1-31
 
 
